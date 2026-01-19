@@ -1,0 +1,53 @@
+{
+  "workflowId": "subject-matching-workflow",
+  "name": "Dynamic Subject Matching",
+  "Steps": [
+    {
+      "id": "search-input",
+      "type": "remote",
+      "processorClass": "InputSubjectValidator",
+      "parallel": false
+    },
+    {
+      "id": "score-search-results",
+      "type": "local",
+      "processorClass": "CandidateScorer",
+      "parallel": false
+    },
+    {
+      "id": "validate-input",
+      "type": "local",
+      "processorClass": "InputSubjectValidator",
+      "parallel": false
+    },
+    {
+      "id": "normalize-composite",
+      "type": "composite",
+      "parallel": true,
+      "threadPool": "candidate-normalize",
+      "steps": [
+        {
+          "id": "name-normalize",
+          "type": "local-http",
+          "threadPool": "name-normalize",
+          "parallel": true,
+          "endpointUri": "http://xxxx",
+          "processorClass": "NameNormalize"
+        },
+        {
+          "id": "address-normalize",
+          "type": "local",
+          "threadPool": "name-normalize",
+          "parallel": true,
+          "processorClass": "AddressNormalize"
+        },
+        {
+          "id": "id-normalize",
+          "type": "local",
+          "parallel": true,
+          "processorClass": "IDNormalize"
+        }
+      ]
+    }
+  ]
+}
